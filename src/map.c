@@ -17,6 +17,7 @@ static map_node_t *map_newnode(const char *key, void *value, int vsize) {
   int klen = strlen(key);
   int voffset = klen + (sizeof(void*) - klen % sizeof(void*));
   node = malloc(sizeof(*node) + voffset + vsize);
+  if (!node) return NULL;
   memcpy(node->key, key, klen + 1);
   node->hash = map_hash(key);
   node->value = node->key + voffset;
