@@ -8,13 +8,6 @@
 struct map_node_t;
 typedef struct map_node_t map_node_t;
 
-struct map_node_t {
-  unsigned hash;
-  void *value;
-  map_node_t *next;
-  char key[1];
-};
-
 typedef struct {
   map_node_t **buckets;
   unsigned nbuckets, nnodes;

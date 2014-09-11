@@ -2,6 +2,13 @@
 #include <string.h>
 #include "map.h"
 
+struct map_node_t {
+  unsigned hash;
+  void *value;
+  map_node_t *next;
+  char key[1];
+};
+
 
 static unsigned map_hash(const char *str) {
   unsigned hash = 5381;
