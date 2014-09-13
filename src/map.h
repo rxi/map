@@ -24,7 +24,7 @@ typedef struct {
 
 
 #define map_init(m)\
-  memset(m, 0, sizeof(*m))
+  memset(m, 0, sizeof(*(m)))
 
 
 #define map_deinit(m)\
