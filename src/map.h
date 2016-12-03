@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2014 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -11,6 +11,8 @@
 #include <string.h>
 
 #define MAP_VERSION "0.1.0"
+
+
 
 struct map_node_t;
 typedef struct map_node_t map_node_t;
@@ -58,6 +60,22 @@ typedef struct {
 #define map_next(m, iter)\
   map_next_(&(m)->base, iter)
 
+#ifdef __cplusplus
+extern "C"{
+ #undef map_get
+ #ifdef __clang__
+  #define ___TYPEOF_ __typeof__
+ #elif defined(__GNUC__)
+  #define ___TYPEOF_ typeof
+ #elif defined(_MSC_VER) && _MSC_VER>=1600
+  #define ___TYPEOF_ decltype
+ #else
+  #warning "C++ build need typeof"
+ #endif /*endof clang*/
+ #define map_get(m, key)\
+  ( (m)->ref = (___TYPEOF_((m)->ref)) map_get_(&(m)->base, key) )
+#endif /*endof  __cplusplus*/
+
 
 void map_deinit_(map_base_t *m);
 void *map_get_(map_base_t *m, const char *key);
@@ -73,5 +91,9 @@ typedef map_t(int) map_int_t;
 typedef map_t(char) map_char_t;
 typedef map_t(float) map_float_t;
 typedef map_t(double) map_double_t;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
