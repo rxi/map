@@ -104,6 +104,17 @@ while ((key = map_next(&m, &iter))) {
 }
 ```
 
+## Update 2016/12/04
+1. Build Compatible with C++(-Wall -Werror)
+	
+	windows _MSC_VER >= 1600(VS2010)
+
+	clang(support but not test)
+
+	gcc(tested gcc>=4.0.0)
+
+2. Add test code
+
 ## License
 This library is free software; you can redistribute it and/or modify it under
 the terms of the MIT license. See [LICENSE](LICENSE) for details.

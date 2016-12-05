@@ -1,0 +1,17 @@
+# compile
+map.obj: ../../src/map.c
+    cl -c -DWIN32 -D_DEBUG -D_CONSOLE -I../../src ../../src/map.c
+
+main.obj: main.cpp
+    cl -c -DWIN32 -D_DEBUG -D_CONSOLE -I../../src main.cpp
+
+# link
+cpp_test.exe: main.obj map.obj
+	link /NOLOGO /subsystem:console /out:cpp_test.exe main.obj map.obj kernel32.lib
+ 	
+all: cpp_test.exe
+
+
+clean: 
+	del *.obj  
+	del *.exe     
