@@ -30,8 +30,8 @@ typedef struct {
   struct { map_base_t base; T *ref; T tmp; }
 
 
-#define map_init(m)\
-  memset(m, 0, sizeof(*(m)))
+#define map_init(m, initial_nbuckets)\
+  map_init_(&(m)->base, initial_nbuckets)
 
 
 #define map_deinit(m)\
@@ -59,6 +59,7 @@ typedef struct {
   map_next_(&(m)->base, iter)
 
 
+int map_init_(map_base_t *m, unsigned initial_nbuckets);
 void map_deinit_(map_base_t *m);
 void *map_get_(map_base_t *m, const char *key);
 int map_set_(map_base_t *m, const char *key, void *value, int vsize);

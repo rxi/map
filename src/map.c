@@ -108,6 +108,19 @@ static map_node_t **map_getref(map_base_t *m, const char *key) {
 }
 
 
+int map_init_(map_base_t *m, unsigned initial_nbuckets) {
+  // Clear the memory.
+  memset(m, 0, sizeof(*m));
+
+  // Pre-initialize buckets array only if initial_nbuckets is a power of 2.
+  // Anyway, it is reallocated automatically when needed.
+  if ((initial_nbuckets > 0) && !(initial_nbuckets & (initial_nbuckets - 1)))
+    return map_resize(m, initial_nbuckets);
+  else
+    return 0;
+}
+
+
 void map_deinit_(map_base_t *m) {
   map_node_t *next, *node;
   int i;
