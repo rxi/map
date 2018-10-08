@@ -9,8 +9,9 @@
 #define MAP_H
 
 #include <string.h>
+#include <stdbool.h>
 
-#define MAP_VERSION "0.1.0"
+#define MAP_VERSION "0.1.1"
 
 struct map_node_t;
 typedef struct map_node_t map_node_t;
@@ -18,6 +19,7 @@ typedef struct map_node_t map_node_t;
 typedef struct {
   map_node_t **buckets;
   unsigned nbuckets, nnodes;
+  bool initialized;
 } map_base_t;
 
 typedef struct {
@@ -31,24 +33,22 @@ typedef struct {
 
 
 #define map_init(m, initial_nbuckets)\
-  map_init_(&(m)->base, initial_nbuckets)
+  ( ((m) != NULL) ? map_init_(&(m)->base, initial_nbuckets) : -1 )
 
 
 #define map_deinit(m)\
-  map_deinit_(&(m)->base)
+  do { if ((m) != NULL) { map_deinit_(&(m)->base); } } while (0)
 
 
 #define map_get(m, key)\
-  ( (m)->ref = map_get_(&(m)->base, key) )
+  ( ((m) != NULL) ? map_get_(&(m)->base, key) : NULL )
 
 
 #define map_set(m, key, value)\
-  ( (m)->tmp = (value),\
-    map_set_(&(m)->base, key, &(m)->tmp, sizeof((m)->tmp)) )
-
+  ( ((m) != NULL) ? ((m)->tmp = (value), map_set_(&(m)->base, key, &(m)->tmp, sizeof((m)->tmp))) : -1 )
 
 #define map_remove(m, key)\
-  map_remove_(&(m)->base, key)
+  do { if ((m) != NULL) { map_remove_(&(m)->base, key); } } while (0)
 
 
 #define map_iter(m)\
@@ -56,7 +56,7 @@ typedef struct {
 
 
 #define map_next(m, iter)\
-  map_next_(&(m)->base, iter)
+  ( ((m) != NULL) ? map_next_(&(m)->base, iter) : NULL )
 
 
 int map_init_(map_base_t *m, unsigned initial_nbuckets);

@@ -9,9 +9,13 @@ into an existing C project and compiled along with it.
 ## Usage
 Before using a map it should first be initialised using the `map_init()`
 function.
+The second argument is an integer with the number of buckets to be pre-allocated.
+If is not a power of 2 or 0, no pre-allocation is done. It can improve the speed but,
+on the other hand, could allocate useless space.
 ```c
 map_int_t m;
-map_init(&m);
+unsigned initial_nbuckets = 128;
+map_init(&m, initial_nbuckets);
 ```
 
 Values can added to a map using the `map_set()` function.

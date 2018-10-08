@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include "map.h"
 
 struct map_node_t {
@@ -28,10 +29,10 @@ static unsigned map_hash(const char *str) {
 
 
 static map_node_t *map_newnode(const char *key, void *value, int vsize) {
-  map_node_t *node;
   int ksize = strlen(key) + 1;
+  if (ksize > PTRDIFF_MAX) return NULL;
   int voffset = ksize + ((sizeof(void*) - ksize) % sizeof(void*));
-  node = malloc(sizeof(*node) + voffset + vsize);
+  map_node_t *node = malloc(sizeof(*node) + voffset + vsize);
   if (!node) return NULL;
   memcpy(node + 1, key, ksize);
   node->hash = map_hash(key);
@@ -58,10 +59,9 @@ static void map_addnode(map_base_t *m, map_node_t *node) {
 static int map_resize(map_base_t *m, int nbuckets) {
   map_node_t *nodes, *node, *next;
   map_node_t **buckets;
-  int i; 
   /* Chain all nodes together */
   nodes = NULL;
-  i = m->nbuckets;
+  unsigned i = m->nbuckets;
   while (i--) {
     node = (m->buckets)[i];
     while (node) {
@@ -94,9 +94,8 @@ static int map_resize(map_base_t *m, int nbuckets) {
 
 static map_node_t **map_getref(map_base_t *m, const char *key) {
   unsigned hash = map_hash(key);
-  map_node_t **next;
   if (m->nbuckets > 0) {
-    next = &m->buckets[map_bucketidx(m, hash)];
+    map_node_t **next = &m->buckets[map_bucketidx(m, hash)];
     while (*next) {
       if ((*next)->hash == hash && !strcmp((char*) (*next + 1), key)) {
         return next;
@@ -111,7 +110,7 @@ static map_node_t **map_getref(map_base_t *m, const char *key) {
 int map_init_(map_base_t *m, unsigned initial_nbuckets) {
   // Clear the memory.
   memset(m, 0, sizeof(*m));
-
+  m->initialized = true;
   // Pre-initialize buckets array only if initial_nbuckets is a power of 2.
   // Anyway, it is reallocated automatically when needed.
   if ((initial_nbuckets > 0) && !(initial_nbuckets & (initial_nbuckets - 1)))
@@ -122,42 +121,51 @@ int map_init_(map_base_t *m, unsigned initial_nbuckets) {
 
 
 void map_deinit_(map_base_t *m) {
-  map_node_t *next, *node;
-  int i;
-  i = m->nbuckets;
+  if (m == NULL)
+    return;
+  if (!m->initialized)
+    return;
+  unsigned i = m->nbuckets;
   while (i--) {
-    node = m->buckets[i];
+    map_node_t *node = m->buckets[i];
     while (node) {
-      next = node->next;
+      map_node_t *next = node->next;
       free(node);
       node = next;
     }
   }
   free(m->buckets);
+  m->initialized = false;
 }
 
 
 void *map_get_(map_base_t *m, const char *key) {
+  if (m == NULL || key == NULL)
+    return NULL;
+  if (!m->initialized)
+    return NULL;
   map_node_t **next = map_getref(m, key);
   return next ? (*next)->value : NULL;
 }
 
 
 int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
-  int n, err;
-  map_node_t **next, *node;
+  if (m == NULL || key == NULL || value == NULL)
+    return -1;
+  if (!m->initialized)
+    return -1;
   /* Find & replace existing node */
-  next = map_getref(m, key);
+  map_node_t **next = map_getref(m, key);
   if (next) {
     memcpy((*next)->value, value, vsize);
     return 0;
   }
   /* Add new node */
-  node = map_newnode(key, value, vsize);
+  map_node_t *node = map_newnode(key, value, vsize);
   if (node == NULL) goto fail;
   if (m->nnodes >= m->nbuckets) {
-    n = (m->nbuckets > 0) ? (m->nbuckets << 1) : 1;
-    err = map_resize(m, n);
+    int n = (m->nbuckets > 0) ? (m->nbuckets << 1) : 1;
+    int err = map_resize(m, n);
     if (err) goto fail;
   }
   map_addnode(m, node);
@@ -170,10 +178,13 @@ int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
 
 
 void map_remove_(map_base_t *m, const char *key) {
-  map_node_t *node;
+  if (m == NULL || key == NULL)
+    return;
+  if (!m->initialized)
+    return;
   map_node_t **next = map_getref(m, key);
   if (next) {
-    node = *next;
+    map_node_t *node = *next;
     *next = (*next)->next;
     free(node);
     m->nnodes--;
@@ -190,6 +201,10 @@ map_iter_t map_iter_(void) {
 
 
 const char *map_next_(map_base_t *m, map_iter_t *iter) {
+  if (m == NULL || iter == NULL)
+    return NULL;
+  if (!m->initialized)
+    return NULL;
   if (iter->node) {
     iter->node = iter->node->next;
     if (iter->node == NULL) goto nextBucket;
