@@ -11,7 +11,7 @@
 #include "map.h"
 
 struct map_node_t {
-  unsigned hash;
+  unsigned int hash;
   void *value;
   map_node_t *next;
   /* char key[]; */
@@ -19,8 +19,8 @@ struct map_node_t {
 };
 
 
-static unsigned map_hash(const char *str) {
-  unsigned hash = 5381;
+static unsigned int map_hash(const char *str) {
+  unsigned int hash = 5381;
   while (*str) {
     hash = ((hash << 5) + hash) ^ *str++;
   }
@@ -42,7 +42,7 @@ static map_node_t *map_newnode(const char *key, void *value, int vsize) {
 }
 
 
-static int map_bucketidx(map_base_t *m, unsigned hash) {
+static int map_bucketidx(map_base_t *m, unsigned int hash) {
   /* If the implementation is changed to allow a non-power-of-2 bucket count,
    * the line below should be changed to use mod instead of AND */
   return hash & (m->nbuckets - 1);
@@ -56,12 +56,12 @@ static void map_addnode(map_base_t *m, map_node_t *node) {
 }
 
 
-static int map_resize(map_base_t *m, int nbuckets) {
+static int map_resize(map_base_t *m, unsigned int nbuckets) {
   map_node_t *nodes, *node, *next;
   map_node_t **buckets;
   /* Chain all nodes together */
   nodes = NULL;
-  unsigned i = m->nbuckets;
+  unsigned int i = m->nbuckets;
   while (i--) {
     node = (m->buckets)[i];
     while (node) {
@@ -93,7 +93,7 @@ static int map_resize(map_base_t *m, int nbuckets) {
 
 
 static map_node_t **map_getref(map_base_t *m, const char *key) {
-  unsigned hash = map_hash(key);
+  unsigned int hash = map_hash(key);
   if (m->nbuckets > 0) {
     map_node_t **next = &m->buckets[map_bucketidx(m, hash)];
     while (*next) {
@@ -107,7 +107,7 @@ static map_node_t **map_getref(map_base_t *m, const char *key) {
 }
 
 
-int map_init_(map_base_t *m, unsigned initial_nbuckets) {
+int map_init_(map_base_t *m, unsigned int initial_nbuckets) {
   // Clear the memory.
   memset(m, 0, sizeof(*m));
   m->initialized = true;
@@ -125,7 +125,7 @@ void map_deinit_(map_base_t *m) {
     return;
   if (!m->initialized)
     return;
-  unsigned i = m->nbuckets;
+  unsigned int i = m->nbuckets;
   while (i--) {
     map_node_t *node = m->buckets[i];
     while (node) {
@@ -164,7 +164,7 @@ int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
   map_node_t *node = map_newnode(key, value, vsize);
   if (node == NULL) goto fail;
   if (m->nnodes >= m->nbuckets) {
-    int n = (m->nbuckets > 0) ? (m->nbuckets << 1) : 1;
+    unsigned int n = (m->nbuckets > 0) ? (m->nbuckets << 1) : 1;
     int err = map_resize(m, n);
     if (err) goto fail;
   }
