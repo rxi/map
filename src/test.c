@@ -14,12 +14,13 @@ int main() {
 	
 	map_init(map, 16);
 	map_set(map, key, value);
-
 	int *value_get = map_get(map, key); 
 	
-	printf("%i\n", *value_get);
+	if (value_get != NULL)
+		printf("%i\n", *value_get);
+	else
+		printf("Error\n");	
 	
 	free(map);
-	
 	return 0;
 }
