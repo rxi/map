@@ -1,5 +1,7 @@
 # map
 A type-safe generic hashmap implementation for C.
+Forked by [rxi/map](https://github.com/rxi/map), it adds the preallocation
+of an arbitrary (power of 2) number of buckets for performance improvements.
 
 ## Installation 
 The [map.c](src/map.c?raw=1) and [map.h](src/map.h?raw=1) files can be dropped
@@ -43,17 +45,6 @@ map_deinit(&m);
 
 
 ## Types
-map.h provides the following predefined map types:
-
-Contained Type  | Type name
-----------------|----------------------------------
-void*           | map_void_t
-char*           | map_str_t
-int             | map_int_t
-char            | map_char_t
-float           | map_float_t
-double          | map_double_t
-
 To define a new map type the `map_t()` macro should be used:
 ```c
 /* Creates the type uint_map_t for storing unsigned ints */
@@ -72,8 +63,9 @@ Creates a map struct for containing values of type `T`.
 typedef map_t(FILE*) fp_map_t;
 ```
 
-### map\_init(m)
-Initialises the map, this must be called before the map can be used. 
+### map\_init(m, initial_nbuckets)
+Initialises the map, this must be called before the map can be used. The parameter
+`initial_nbuckets` sets the number of buckets to be pre-allocated.
 
 ### map\_deinit(m)
 Deinitialises the map, freeing the memory the map allocated during use;
