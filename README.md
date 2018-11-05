@@ -1,6 +1,6 @@
 # map
 A type-safe generic hashmap implementation for C.
-Forked by [rxi/map](https://github.com/rxi/map), it adds the preallocation
+Forked from [rxi/map](https://github.com/rxi/map), it adds the preallocation
 of an arbitrary (power of 2) number of buckets for performance improvements.
 
 ## Installation 
