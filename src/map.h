@@ -34,7 +34,7 @@ typedef struct {
 #define map_init_reserve(m, initial_nbuckets)\
 	( ((m) != NULL) ? map_init_(&(m)->base, initial_nbuckets) : -1 )
 
-#define map_init(m, initial_nbuckets)\
+#define map_init(m)\
 	map_init_reserve(m, 0)
 
 #define map_deinit(m)\
