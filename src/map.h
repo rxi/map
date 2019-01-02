@@ -59,7 +59,7 @@ typedef struct {
 int map_init_(map_base_t *m, unsigned int initial_nbuckets);
 void map_deinit_(map_base_t *m);
 void *map_get_(map_base_t *m, const char *key);
-int map_set_(map_base_t *m, const char *key, void *value, int vsize);
+int map_set_(map_base_t *m, const char *key, const void *value, int vsize);
 void map_remove_(map_base_t *m, const char *key);
 map_iter_t map_iter_(void);
 const char *map_next_(map_base_t *m, map_iter_t *iter);

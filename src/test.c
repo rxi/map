@@ -12,7 +12,7 @@ int main() {
 	const int value = 12;
 	const char key[] = "mykey";
 	
-	map_init(map, 16);
+	map_init_reserve(map, 16);
 	map_set(map, key, value);
 	int *value_get = map_get(map, key); 
 	

@@ -28,7 +28,7 @@ static unsigned int map_hash(const char *str) {
 }
 
 
-static map_node_t *map_newnode(const char *key, void *value, int vsize) {
+static map_node_t *map_newnode(const char *key, const void *value, int vsize) {
 	map_node_t *node = malloc(sizeof(*node));
 	if (!node)
 		return NULL;
@@ -45,6 +45,7 @@ static map_node_t *map_newnode(const char *key, void *value, int vsize) {
 		return NULL;
 	}
 	memcpy(node->value, value, vsize);
+	node->next = NULL;
 	return node;
 }
 
@@ -165,7 +166,7 @@ void *map_get_(map_base_t *m, const char *key) {
 }
 
 
-int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
+int map_set_(map_base_t *m, const char *key, const void *value, int vsize) {
 	if (m == NULL || key == NULL || value == NULL)
 		return -1;
 	if (!m->initialized)
