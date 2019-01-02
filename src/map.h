@@ -31,18 +31,17 @@ typedef struct {
 #define map_t(T)\
 	struct { map_base_t base; T *ref; T tmp; }
 
-
-#define map_init(m, initial_nbuckets)\
+#define map_init_reserve(m, initial_nbuckets)\
 	( ((m) != NULL) ? map_init_(&(m)->base, initial_nbuckets) : -1 )
 
+#define map_init(m, initial_nbuckets)\
+	map_init_reserve(m, 0)
 
 #define map_deinit(m)\
 	do { if ((m) != NULL) { map_deinit_(&(m)->base); } } while (0)
 
-
 #define map_get(m, key)\
 	( ((m) != NULL) ? map_get_(&(m)->base, key) : NULL )
-
 
 #define map_set(m, key, value)\
 	( ((m) != NULL) ? ((m)->tmp = (value), map_set_(&(m)->base, key, &(m)->tmp, sizeof((m)->tmp))) : -1 )
@@ -50,10 +49,8 @@ typedef struct {
 #define map_remove(m, key)\
 	do { if ((m) != NULL) { map_remove_(&(m)->base, key); } } while (0)
 
-
 #define map_iter(m)\
 	map_iter_()
-
 
 #define map_next(m, iter)\
 	( ((m) != NULL) ? map_next_(&(m)->base, iter) : NULL )
