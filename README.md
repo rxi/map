@@ -1,7 +1,8 @@
 # map
 A type-safe generic hashmap implementation for C.
-Forked from [rxi/map](https://github.com/rxi/map), it adds the preallocation
-of an arbitrary (power of 2) number of buckets for performance improvements.
+Forked from [rxi/map](https://github.com/rxi/map), it adds the possibility to
+pre-allocate an arbitrary (power of 2) number of buckets for performance
+improvements.
 
 ## Installation 
 The [map.c](src/map.c?raw=1) and [map.h](src/map.h?raw=1) files can be dropped
@@ -9,8 +10,8 @@ into an existing C project and compiled along with it.
 
 
 ## Usage
-Before using a map it should first be initialised using the `map_init_reserve()`
-function.
+Before using a map, it should first be initialised using the `map_init_reserve()`
+macro.
 The second argument is an integer with the number of buckets to be pre-allocated.
 If is not a power of 2 or 0, no pre-allocation is done. It can improve the speed but,
 on the other hand, could allocate useless space.
@@ -20,18 +21,18 @@ unsigned initial_nbuckets = 128;
 map_init_reserve(&m, initial_nbuckets);
 ```
 
-For no pre-allocation, the macro `map_init()` can be used as well.
+It pre-allocation is not needed, the macro `map_init()` can be used as well.
 ```c
 map_int_t m;
 map_init(&m);
 ```
 
-Values can added to a map using the `map_set()` function.
+Values can added to a map using the `map_set()` macro.
 ```c
 map_set(&m, "testkey", 123);
 ```
 
-To retrieve a value from a map, the `map_get()` function can be used.
+To retrieve a value from a map, the `map_get()` macro can be used.
 `map_get()` will return a pointer to the key's value, or `NULL` if no mapping
 for that key exists.
 ```c
@@ -43,7 +44,7 @@ if (val) {
 }
 ```
 
-When you are done with a map the `map_deinit()` function should be called on
+When you are done with a map the `map_deinit()` macro should be called on
 it. This will free any memory the map allocated during use.
 ```c
 map_deinit(&m);
