@@ -41,7 +41,7 @@ typedef struct {
 	do { if ((m) != NULL) { map_deinit_(&(m)->base); } } while (0)
 
 #define map_get(m, key)\
-	( ((m) != NULL) ? map_get_(&(m)->base, key) : NULL )
+	( ((m) != NULL) ? ((m)->ref = map_get_(&(m)->base, key)) : NULL )
 
 #define map_set(m, key, value)\
 	( ((m) != NULL) ? ((m)->tmp = (value), map_set_(&(m)->base, key, &(m)->tmp, sizeof((m)->tmp))) : -1 )
