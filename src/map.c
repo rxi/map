@@ -1,5 +1,6 @@
 /** 
  * Copyright (c) 2014 rxi
+ * Copyright (c) 2019 gcerretani
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the MIT license. See LICENSE for details.

@@ -1,5 +1,6 @@
 /** 
  * Copyright (c) 2014 rxi
+ * Copyright (c) 2019 gcerretani
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the MIT license. See LICENSE for details.
@@ -11,7 +12,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define MAP_VERSION "0.1.1"
+#define MAP_VERSION "0.1.2"
 
 struct map_node_t;
 typedef struct map_node_t map_node_t;
