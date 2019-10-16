@@ -1,7 +1,7 @@
 # map
 A type-safe generic hashmap implementation for C.
 Forked from [rxi/map](https://github.com/rxi/map), it adds the possibility to
-pre-allocate an arbitrary (power of 2) number of buckets for performance
+reserve an arbitrary (power of 2) number of buckets for performance
 improvements.
 
 ## Installation 
