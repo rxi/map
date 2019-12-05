@@ -21,4 +21,4 @@ clean:
 	-$(RM) $(TARGET_LIB) $(OBJS) $(TEST_OUTPUT)
 
 test:
-	-$(CC) $(TEST_SRCS) -l$(NAME_LIB) -o $(TEST_OUTPUT) -L.
+	-$(CC) $(TEST_SRCS) -l$(NAME_LIB) -Wl,-rpath,. -o $(TEST_OUTPUT) -L.
