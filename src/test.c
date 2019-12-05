@@ -31,5 +31,7 @@ int main() {
 
 quit:
 	free(map);
+	printf("%d\n", ret);
+
 	return ret;
 }

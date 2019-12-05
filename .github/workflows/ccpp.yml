@@ -14,6 +14,6 @@ jobs:
     - name: make test
       run: make test
     - name: run test
-      run: test
+      run: ./test
     - name: make clean
       run: make clean
