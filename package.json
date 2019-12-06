@@ -1,7 +1,7 @@
 {
   "name": "map",
-  "version": "0.1.0",
-  "repo": "rxi/map",
+  "version": "0.1.2",
+  "repo": "gcerretani/map",
   "description": "Type-safe generic hash map",
   "keywords": ["hashmap", "map", "table", "hashtable", "dict", "dictionary"],
   "license": "MIT",
