@@ -2,8 +2,8 @@
 //  main.c
 //  map
 //
-//  Created by Kevin Peck on 2020-06-18.
-//  Copyright © 2020 Kevin Peck. All rights reserved.
+//  Created by kpishere on 2020-06-18.
+//  Copyright © 2020 kpishere All rights reserved.
 //
 
 #include <stdio.h>
@@ -112,7 +112,7 @@ void testStructMap() {
         exit(1);
     } else {
         printf("value not found (%s)\n", serialize_myType(&c));
-    }    
+    }
     map_deinit(&m);
 }
 
