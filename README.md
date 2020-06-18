@@ -104,6 +104,42 @@ while ((key = map_next(&m, &iter))) {
 }
 ```
 
+## Extended maps for structure type keys
+
+A user-defined key from struct type is supported with three additional functions. 
+
+Where a user's key type is 
+
+```c
+typedef struct myTypeS {
+    uint8_t a;
+    int b;
+} myType;
+```
+
+The related functions and their use are as follows to add a map instance and mapping with the myType key
+
+```c
+    const myType c = { 0x40, 125};
+
+    map_int_t m;
+    map_init(&m);
+    
+    map_set_sk(&m, &a, sizeof(myType), 123);
+```
+
+To look that up, you'd use this function
+
+```c
+    int *val = map_get_sk(&m, &c, sizeof(myType));
+```
+
+To remove by that key, there is the like remove key function 
+
+```c
+map_remove_sk(&m, &c, sizeof(myType));
+```
+
 ## License
 This library is free software; you can redistribute it and/or modify it under
 the terms of the MIT license. See [LICENSE](LICENSE) for details.

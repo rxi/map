@@ -25,7 +25,6 @@ typedef struct {
   map_node_t *node;
 } map_iter_t;
 
-
 #define map_t(T)\
   struct { map_base_t base; T *ref; T tmp; }
 
