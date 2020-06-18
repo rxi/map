@@ -117,7 +117,7 @@ typedef struct myTypeS {
 } myType;
 ```
 
-The related functions and their use are as follows to add a map instance
+The related functions and their use are as follows to add a map instance and mapping with the myType key
 
 ```c
     const myType c = { 0x40, 125};
@@ -128,18 +128,17 @@ The related functions and their use are as follows to add a map instance
     map_set_sk(&m, &a, sizeof(myType), 123);
 ```
 
-, to lookup that specify map
+To look that up, you'd use this function
 
 ```c
     int *val = map_get_sk(&m, &c, sizeof(myType));
 ```
 
-, and there is the like remove key function 
+To remove by that key, there is the like remove key function 
 
 ```c
 map_remove_sk(&m, &c, sizeof(myType));
 ```
-
 
 ## License
 This library is free software; you can redistribute it and/or modify it under
