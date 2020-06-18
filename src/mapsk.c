@@ -1,5 +1,7 @@
 /** 
- * Copyright (c) 2014 rxi
+ * Copyright (c) 2020 kpishere
+ *
+ * with credits to :  Copyright (c) 2014 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the MIT license. See LICENSE for details.
@@ -7,7 +9,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "map.h"
+#include "mapsk.h"
 
 struct map_node_t {
   unsigned hash;
@@ -17,29 +19,26 @@ struct map_node_t {
   /* char value[]; */
 };
 
-
-static unsigned map_hash(const char *str) {
+static unsigned map_hash_sk(const void *key, int ksize) {
   unsigned hash = 5381;
-  while (*str) {
-    hash = ((hash << 5) + hash) ^ *str++;
+  for(int i=0; i<ksize;i++) {
+    uint8_t v = ((uint8_t *)(key))[i];
+    hash = ((hash << 5) + hash) ^ (v!=0?v:i);
   }
   return hash;
 }
 
-
-static map_node_t *map_newnode(const char *key, void *value, int vsize) {
+static map_node_t *map_newnode_sk(const void *key, int ksize, void *value, int vsize) {
   map_node_t *node;
-  int ksize = (int)strlen(key) + 1;
   int voffset = ksize + ((sizeof(void*) - ksize) % sizeof(void*));
   node = malloc(sizeof(*node) + voffset + vsize);
   if (!node) return NULL;
   memcpy(node + 1, key, ksize);
-  node->hash = map_hash(key);
+  node->hash = map_hash_sk(key, ksize);
   node->value = ((char*) (node + 1)) + voffset;
   memcpy(node->value, value, vsize);
   return node;
 }
-
 
 static int map_bucketidx(map_base_t *m, unsigned hash) {
   /* If the implementation is changed to allow a non-power-of-2 bucket count,
@@ -47,13 +46,11 @@ static int map_bucketidx(map_base_t *m, unsigned hash) {
   return hash & (m->nbuckets - 1);
 }
 
-
 static void map_addnode(map_base_t *m, map_node_t *node) {
   int n = map_bucketidx(m, node->hash);
   node->next = m->buckets[n];
   m->buckets[n] = node;
 }
-
 
 static int map_resize(map_base_t *m, int nbuckets) {
   map_node_t *nodes, *node, *next;
@@ -91,14 +88,13 @@ static int map_resize(map_base_t *m, int nbuckets) {
   return (buckets == NULL) ? -1 : 0;
 }
 
-
-static map_node_t **map_getref(map_base_t *m, const char *key) {
-  unsigned hash = map_hash(key);
+static map_node_t **map_getref_sk(map_base_t *m, const void *key, int ksize) {
+  unsigned hash = map_hash_sk(key, ksize);
   map_node_t **next;
   if (m->nbuckets > 0) {
     next = &m->buckets[map_bucketidx(m, hash)];
     while (*next) {
-      if ((*next)->hash == hash && !strcmp((char*) (*next + 1), key)) {
+        if ((*next)->hash == hash && !memcmp((void*) (*next + 1), key, ksize)) {
         return next;
       }
       next = &(*next)->next;
@@ -107,40 +103,22 @@ static map_node_t **map_getref(map_base_t *m, const char *key) {
   return NULL;
 }
 
-
-void map_deinit_(map_base_t *m) {
-  map_node_t *next, *node;
-  int i;
-  i = m->nbuckets;
-  while (i--) {
-    node = m->buckets[i];
-    while (node) {
-      next = node->next;
-      free(node);
-      node = next;
-    }
-  }
-  free(m->buckets);
-}
-
-
-void *map_get_(map_base_t *m, const char *key) {
-  map_node_t **next = map_getref(m, key);
+void *map_get_sk_(map_base_t *m, const void *key, int ksize) {
+  map_node_t **next = map_getref_sk(m, key, ksize);
   return next ? (*next)->value : NULL;
 }
 
-
-int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
+int map_set_sk_(map_base_t *m, const void *key, int ksize, void *value, int vsize) {
   int n, err;
   map_node_t **next, *node;
   /* Find & replace existing node */
-  next = map_getref(m, key);
+  next = map_getref_sk(m, key, ksize);
   if (next) {
     memcpy((*next)->value, value, vsize);
     return 0;
   }
   /* Add new node */
-  node = map_newnode(key, value, vsize);
+  node = map_newnode_sk(key, ksize, value, vsize);
   if (node == NULL) goto fail;
   if (m->nnodes >= m->nbuckets) {
     n = (m->nbuckets > 0) ? (m->nbuckets << 1) : 1;
@@ -155,10 +133,9 @@ int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
   return -1;
 }
 
-
-void map_remove_(map_base_t *m, const char *key) {
+void map_remove_sk_(map_base_t *m, const void *key, int ksize) {
   map_node_t *node;
-  map_node_t **next = map_getref(m, key);
+  map_node_t **next = map_getref_sk(m, key, ksize);
   if (next) {
     node = *next;
     *next = (*next)->next;
@@ -167,27 +144,3 @@ void map_remove_(map_base_t *m, const char *key) {
   }
 }
 
-
-map_iter_t map_iter_(void) {
-  map_iter_t iter;
-  iter.bucketidx = -1;
-  iter.node = NULL;
-  return iter;
-}
-
-
-const char *map_next_(map_base_t *m, map_iter_t *iter) {
-  if (iter->node) {
-    iter->node = iter->node->next;
-    if (iter->node == NULL) goto nextBucket;
-  } else {
-    nextBucket:
-    do {
-      if (++iter->bucketidx >= m->nbuckets) {
-        return NULL;
-      }
-      iter->node = m->buckets[iter->bucketidx];
-    } while (iter->node == NULL);
-  }
-  return (char*) (iter->node + 1);
-}
