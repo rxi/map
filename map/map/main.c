@@ -43,6 +43,51 @@ void testBasicMap() {
     map_deinit(&m);
 }
 
+typedef struct {
+    uint8_t c;
+    int d;
+} myValueType;
+
+typedef map_t(myValueType) myValueType_map_t;
+
+
+// Basic use of map with string keys and struct type values
+void testBasicWStructValMap() {
+    printf("\nTest basic map with struct type values\n");
+    
+    myValueType_map_t m;
+    map_init(&m);
+    
+    myValueType v1 = { 0x42, 17};
+    myValueType v2 = { 0x42, 18};
+    myValueType v3 = { 0x42, 19};
+
+
+    map_set(&m, "testkeyA", v1);
+    map_set(&m, "testkeyB", v2);
+    map_set(&m, "testke", v3);
+
+    myValueType *val = map_get(&m, "testkeyA");
+    if (val) {
+      printf("value: %02X %d\n", val->c, val->d);
+    } else {
+        printf("ERROR 'val == NULL' with 'testkeyA'");
+        exit(1);
+    }
+    
+    val = map_get(&m, "testkey");
+    if (val) {
+        printf("ERROR 'val != NULL' with 'testkey'");
+        exit(2);
+    } else {
+        printf("value not found\n");
+    }
+
+    map_deinit(&m);
+}
+
+
+
 // Use of map with struct keys that have string serializer for struct key
 typedef struct myTypeS {
     uint8_t a;
@@ -122,6 +167,7 @@ void testStructMap() {
 int main(int argc, const char * argv[]) {
 
     testBasicMap();
+    testBasicWStructValMap();
     testStructSerializeMap();
     testStructMap();
     
