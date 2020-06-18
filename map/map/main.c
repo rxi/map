@@ -3,7 +3,10 @@
 //  map
 //
 //  Created by kpishere on 2020-06-18.
-//  Copyright © 2020 kpishere All rights reserved.
+//  Copyright © 2020 kpishere
+//
+// This library is free software; you can redistribute it and/or modify it
+// under the terms of the MIT license. See LICENSE for details.
 //
 
 #include <stdio.h>
