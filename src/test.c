@@ -27,9 +27,11 @@ int main() {
 
 	if (*value_get != value) {
 		ret = 3;
+		goto quit;
 	}
 
 quit:
+	map_deinit(map);
 	free(map);
 	printf("%d\n", ret);
 
