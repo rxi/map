@@ -1,3 +1,10 @@
+/** 
+ * Copyright (c) 2019-2022 Giovanni Cerretani
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the MIT license. See LICENSE for details.
+ */
+
 #include "map.h"
 #include <stdio.h>
 #include <stdlib.h>
